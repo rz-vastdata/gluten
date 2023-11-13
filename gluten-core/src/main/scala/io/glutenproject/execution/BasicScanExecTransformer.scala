@@ -63,7 +63,7 @@ trait BasicScanExecTransformer extends TransformSupport with GlutenPlan {
     }
     val planNode =
       PlanBuilder.makePlan(substraitContext, Lists.newArrayList(transformContext.root), outNames)
-    val fileFormat = ConverterUtils.getFileFormat(this)
+    val (fileFormat, _) = ConverterUtils.getFileFormat(this)
 
     BackendsApiManager.getIteratorApiInstance.genNativeFileScanRDD(
       sparkContext,
@@ -80,7 +80,7 @@ trait BasicScanExecTransformer extends TransformSupport with GlutenPlan {
   }
 
   override def doValidateInternal(): Boolean = {
-    val fileFormat = ConverterUtils.getFileFormat(this)
+    val (fileFormat, _) = ConverterUtils.getFileFormat(this)
     if (!BackendsApiManager.getTransformerApiInstance
       .supportsReadFileFormat(
         fileFormat, schema.fields, getPartitionSchemas.nonEmpty, getInputFilePaths)) {

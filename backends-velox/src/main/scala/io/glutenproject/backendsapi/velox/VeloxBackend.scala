@@ -21,7 +21,7 @@ import io.glutenproject.backendsapi._
 import io.glutenproject.backendsapi.velox.IteratorHandler
 import io.glutenproject.expression.WindowFunctionsBuilder
 import io.glutenproject.substrait.rel.LocalFilesNode.ReadFileFormat
-import io.glutenproject.substrait.rel.LocalFilesNode.ReadFileFormat.{DwrfReadFormat, OrcReadFormat, ParquetReadFormat}
+import io.glutenproject.substrait.rel.LocalFilesNode.ReadFileFormat.{DwrfReadFormat, OrcReadFormat, ParquetReadFormat, CustomReadFormat}
 import org.apache.spark.sql.catalyst.expressions.aggregate.{AggregateExpression, Count, Sum}
 import org.apache.spark.sql.catalyst.expressions.{Alias, CumeDist, DenseRank, Descending, Expression, Literal, NamedExpression, PercentRank, RangeFrame, Rank, RowNumber, SortOrder, SpecialFrameBoundary, SpecifiedWindowFrame}
 import org.apache.spark.sql.catalyst.plans.JoinType
@@ -73,6 +73,7 @@ object BackendSettings extends BackendSettingsApi {
       case OrcReadFormat => fields.map(_.dataType).collect {
         case _: TimestampType =>
       }.isEmpty
+      case CustomReadFormat => true // TODO(vast): make sure VAST+Velox support relevant types
       case _ => false
     }
   }

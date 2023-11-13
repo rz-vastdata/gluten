@@ -93,6 +93,7 @@ macro(ADD_VELOX_DEPENDENCIES)
   add_velox_dependency(vector::arrow::bridge "${VELOX_COMPONENTS_PATH}/vector/arrow/libvelox_arrow_bridge.a")
 
   add_velox_dependency(connector::hive "${VELOX_COMPONENTS_PATH}/connectors/hive/libvelox_hive_connector.a")
+  add_velox_dependency(connector::vast "${VELOX_COMPONENTS_PATH}/connectors/vast/libvelox_vast_connector.a")
   add_velox_dependency(connector "${VELOX_COMPONENTS_PATH}/connectors/libvelox_connector.a")
   if(ENABLE_HDFS)
     add_velox_dependency(connector::hive::hdfs "${VELOX_COMPONENTS_PATH}/connectors/hive/storage_adapters/hdfs/libvelox_hdfs.a")

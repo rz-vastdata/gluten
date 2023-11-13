@@ -3,7 +3,7 @@
 set -exu
 
 VELOX_REPO=https://github.com/oap-project/velox.git
-VELOX_BRANCH=branch-1.0
+VELOX_BRANCH=custom-format
 VELOX_HOME=""
 
 #Set on run gluten on HDFS
@@ -186,6 +186,14 @@ elif [[ "$LINUX_DISTRIBUTION" == "alinux" ]]; then
     3) process_setup_alinux3 ;;
     *)
       echo "Unsupport alinux version: $LINUX_VERSION_ID"
+      exit 1
+    ;;
+  esac
+elif [[ "$LINUX_DISTRIBUTION" == "rocky" ]]; then
+  case "$LINUX_VERSION_ID" in
+    8.6) process_setup_centos8 ;;
+    *)
+      echo "Unsupport rocky version: $LINUX_VERSION_ID"
       exit 1
     ;;
   esac

@@ -236,7 +236,8 @@ class FileSourceScanExecTransformer(@transient relation: HadoopFsRelation,
 
   override def doTransform(context: SubstraitContext): TransformContext = {
     val transformCtx = super.doTransform(context)
-    if (ConverterUtils.getFileFormat(this) == ReadFileFormat.TextReadFormat) {
+    val (fileFormat, _) = ConverterUtils.getFileFormat(this)
+    if (fileFormat == ReadFileFormat.TextReadFormat) {
       var options: Map[String, String] = Map()
       relation.options.foreach {
         case ("delimiter", v) => options += ("field_delimiter" -> v)

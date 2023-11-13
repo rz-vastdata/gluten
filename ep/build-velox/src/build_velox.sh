@@ -148,6 +148,14 @@ function setup {
       exit 1
       ;;
     esac
+  elif [[ "$LINUX_DISTRIBUTION" == "rocky" ]]; then
+    case "$LINUX_VERSION_ID" in
+    8.6) scripts/setup-centos8.sh ;;
+    *)
+      echo "Unsupport rocky version: $LINUX_VERSION_ID"
+      exit 1
+    ;;
+    esac
   else
     echo "Unsupport linux distribution: $LINUX_DISTRIBUTION"
     exit 1

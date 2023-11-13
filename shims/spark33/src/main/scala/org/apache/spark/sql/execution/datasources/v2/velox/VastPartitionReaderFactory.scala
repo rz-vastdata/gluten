@@ -14,23 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.spark.sql.execution.datasources.v2.velox
 
-package io.glutenproject.substrait.rel;
+import org.apache.spark.internal.Logging
+import org.apache.spark.sql.catalyst.InternalRow
+import org.apache.spark.sql.connector.read.{InputPartition, PartitionReader}
+import org.apache.spark.sql.execution.datasources.PartitionedFile
+import org.apache.spark.sql.execution.datasources.v2.FilePartitionReaderFactory
 
-import java.util.ArrayList;
+case class VastPartitionReaderFactory(scan: VastScan)
+  extends FilePartitionReaderFactory
+  with Logging {
 
-public class LocalFilesBuilder {
-  private LocalFilesBuilder() {
+  override def buildReader(partitionedFile: PartitionedFile): PartitionReader[InternalRow] = {
+    throw new UnsupportedOperationException
   }
 
-  public static LocalFilesNode makeLocalFiles(Integer index, ArrayList<String> paths,
-                                              ArrayList<Long> starts, ArrayList<Long> lengths,
-                                              LocalFilesNode.ReadFileFormat fileFormat,
-                                              String connectorId) {
-    return new LocalFilesNode(index, paths, starts, lengths, fileFormat, connectorId);
-  }
-
-  public static LocalFilesNode makeLocalFiles(String iterPath) {
-    return new LocalFilesNode(iterPath);
-  }
+  override def supportColumnarReads(partition: InputPartition): Boolean = true
 }

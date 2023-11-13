@@ -7,6 +7,7 @@
 #include "velox/connectors/hive/HiveConfig.h"
 #include "velox/connectors/hive/HiveConnector.h"
 #include "velox/connectors/hive/HiveConnectorSplit.h"
+#include "velox/connectors/vast/VastConnector.h"
 #include "velox/exec/PlanNodeStats.h"
 
 using namespace facebook;
@@ -310,10 +311,18 @@ WholeStageResultIteratorFirstStage::WholeStageResultIteratorFirstStage(
     std::vector<std::shared_ptr<velox::connector::ConnectorSplit>> connectorSplits;
     connectorSplits.reserve(paths.size());
     for (int idx = 0; idx < paths.size(); idx++) {
-      auto partitionKeys = extractPartitionColumnAndValue(paths[idx]);
-      auto split = std::make_shared<velox::connector::hive::HiveConnectorSplit>(
-          kHiveConnectorId, paths[idx], format, starts[idx], lengths[idx], partitionKeys);
-      connectorSplits.emplace_back(split);
+      LOG(INFO) << "scanInfo: format=" << facebook::velox::dwio::common::toString(format);
+      if (format == facebook::velox::dwio::common::FileFormat::CUSTOM) {
+        // TODO(vast): use a factory for creating the split from scanInfo
+        auto split = std::make_shared<velox::connector::vast::VastConnectorSplit>(scanInfo->connectorId);
+        connectorSplits.emplace_back(split);
+        LOG(INFO) << "adding custom split: " << split->toString();
+      } else {
+        auto partitionKeys = extractPartitionColumnAndValue(paths[idx]);
+        auto split = std::make_shared<velox::connector::hive::HiveConnectorSplit>(
+            kHiveConnectorId, paths[idx], format, starts[idx], lengths[idx], partitionKeys);
+        connectorSplits.emplace_back(split);
+      }
     }
 
     std::vector<velox::exec::Split> scanSplits;

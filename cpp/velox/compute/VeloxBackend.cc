@@ -89,6 +89,13 @@ std::shared_ptr<ResultIterator> VeloxBackend::getResultIterator(
   // Separate the scan ids and stream ids, and get the scan infos.
   getInfoAndIds(veloxPlanConverter->splitInfos(), veloxPlan_->leafPlanNodeIds(), scanInfos, scanIds, streamIds);
 
+  for (auto info : scanInfos) {
+    LOG(INFO) << "SplitInfo: format=" << facebook::velox::dwio::common::toString(info->format);
+    for (const auto& path : info->paths) {
+      LOG(INFO) << "SplitInfo: path=" << path;
+    }
+  }
+
   if (scanInfos.size() == 0) {
     // Source node is not required.
     auto wholestageIter = std::make_unique<WholeStageResultIteratorMiddleStage>(

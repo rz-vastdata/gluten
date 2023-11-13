@@ -145,6 +145,10 @@ message ReadRel {
         uint64 max_block_size = 1;
       }
 
+      message CustomFormatReadOptions {
+        string connector_id = 1;
+      }
+
       // The format of the files.
       oneof file_format {
         ParquetReadOptions parquet = 9;
@@ -154,6 +158,8 @@ message ReadRel {
         DwrfReadOptions dwrf = 13;
         TextReadOptions text = 14;
         JsonReadOptions json = 15;
+
+        CustomFormatReadOptions custom = 1000;
      }
     }
   }

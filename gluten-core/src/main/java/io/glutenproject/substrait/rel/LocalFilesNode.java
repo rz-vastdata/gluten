@@ -45,22 +45,25 @@ public class LocalFilesNode implements Serializable {
     MergeTreeReadFormat(),
     TextReadFormat(),
     JsonReadFormat(),
+    CustomReadFormat(),
     UnknownFormat()
   }
 
   private ReadFileFormat fileFormat = ReadFileFormat.UnknownFormat;
+  private String connectorId = null;
   private Boolean iterAsInput = false;
   private StructType fileSchema;
   private Map<String, String> fileReadProperties;
 
   LocalFilesNode(Integer index, ArrayList<String> paths,
                  ArrayList<Long> starts, ArrayList<Long> lengths,
-                 ReadFileFormat fileFormat) {
+                 ReadFileFormat fileFormat, String connectorId) {
     this.index = index;
     this.paths.addAll(paths);
     this.starts.addAll(starts);
     this.lengths.addAll(lengths);
     this.fileFormat = fileFormat;
+    this.connectorId = connectorId;
   }
 
   LocalFilesNode(String iterPath) {
@@ -151,7 +154,15 @@ public class LocalFilesNode implements Serializable {
                           .build();
           fileBuilder.setJson(jsonReadOptions);
           break;
+        case CustomReadFormat:
+          ReadRel.LocalFiles.FileOrFiles.CustomFormatReadOptions options =
+                  ReadRel.LocalFiles.FileOrFiles.CustomFormatReadOptions.newBuilder()
+                          .setConnectorId(connectorId == null ? "" : connectorId)
+                          .build();
+          fileBuilder.setCustom(options);
+          break;
         default:
+          System.err.println("Unsupported format: " + fileFormat);
           break;
       }
       localFilesBuilder.addItems(fileBuilder.build());

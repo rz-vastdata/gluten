@@ -33,6 +33,7 @@
 #endif
 #include "velox/common/memory/MmapAllocator.h"
 #include "velox/connectors/hive/HiveConnector.h"
+#include "velox/connectors/vast/VastConnector.h"
 #include "velox/dwio/dwrf/reader/DwrfReader.h"
 #include "velox/dwio/parquet/RegisterParquetReader.h"
 #include "velox/exec/Operator.h"
@@ -45,6 +46,7 @@ using namespace facebook;
 namespace {
 
 const std::string kHiveConnectorId = "test-hive";
+const std::string kVastConnectorId = "test-vast";
 const std::string kVeloxCacheEnabled = "spark.gluten.sql.columnar.backend.velox.cacheEnabled";
 
 // memory cache
@@ -215,6 +217,15 @@ void VeloxInitializer::init(const std::unordered_map<std::string, std::string>& 
   velox::parquet::registerParquetReaderFactory(velox::parquet::ParquetReaderType::NATIVE);
   velox::dwrf::registerDwrfReaderFactory();
   velox::dwrf::registerOrcReaderFactory();
+
+  // TODO(vast): workaround for https://github.com/oap-project/gluten/pull/3442#issuecomment-1790209019
+  facebook::velox::connector::registerConnectorFactory(std::make_shared<velox::connector::vast::VastConnectorFactory>());
+
+  auto vastFactory = velox::connector::getConnectorFactory(velox::connector::vast::VastConnectorFactory::kVastConnectorName);
+  auto vastProperties = std::make_shared<const velox::core::MemConfig>(); // TODO(vast): initialize
+  auto vastConnector = vastFactory->newConnector(kVastConnectorId, vastProperties, ioExecutor_.get());
+  registerConnector(vastConnector);
+
   // Register Velox functions
   registerAllFunctions();
   if (!facebook::velox::isRegisteredVectorSerde()) {

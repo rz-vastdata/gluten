@@ -112,6 +112,7 @@ class GlutenWholeStageColumnarRDD(@transient sc: SparkContext,
     ExecutorManager.tryTaskSet(numaBindingInfo)
 
     val inputPartition = castNativePartition(split)
+    logInfo("partition plan: " + inputPartition.plan.toString)
     if (rdds.isEmpty) {
       BackendsApiManager.getIteratorApiInstance.genFirstStageIterator(
         inputPartition,

@@ -375,39 +375,44 @@ object ConverterUtils extends Logging {
     }
   }
 
-  def getFileFormat(scan: BasicScanExecTransformer): ReadFileFormat = {
+  def getFileFormat(scan: BasicScanExecTransformer): (ReadFileFormat, String) = {
     scan match {
       case f: BatchScanExecTransformer =>
         f.scan.getClass.getSimpleName match {
-          case "OrcScan" => ReadFileFormat.OrcReadFormat
-          case "ParquetScan" => ReadFileFormat.ParquetReadFormat
-          case "DwrfScan" => ReadFileFormat.DwrfReadFormat
-          case "ClickHouseScan" => ReadFileFormat.MergeTreeReadFormat
-          case _ => ReadFileFormat.UnknownFormat
+          case "OrcScan" => (ReadFileFormat.OrcReadFormat, null)
+          case "ParquetScan" => (ReadFileFormat.ParquetReadFormat, null)
+          case "DwrfScan" => (ReadFileFormat.DwrfReadFormat, null)
+          case "ClickHouseScan" => (ReadFileFormat.MergeTreeReadFormat, null)
+          case "VastScan" => (ReadFileFormat.CustomReadFormat, VAST_CONNECTOR_ID)
+          case _ => (ReadFileFormat.UnknownFormat, null)
         }
       case f: FileSourceScanExecTransformer =>
         f.relation.fileFormat.getClass.getSimpleName match {
-          case "OrcFileFormat" => ReadFileFormat.OrcReadFormat
-          case "ParquetFileFormat" => ReadFileFormat.ParquetReadFormat
-          case "DwrfFileFormat" => ReadFileFormat.DwrfReadFormat
-          case "DeltaMergeTreeFileFormat" => ReadFileFormat.MergeTreeReadFormat
-          case "CSVFileFormat" => ReadFileFormat.TextReadFormat
-          case _ => ReadFileFormat.UnknownFormat
+          case "OrcFileFormat" => (ReadFileFormat.OrcReadFormat, null)
+          case "ParquetFileFormat" => (ReadFileFormat.ParquetReadFormat, null)
+          case "DwrfFileFormat" => (ReadFileFormat.DwrfReadFormat, null)
+          case "DeltaMergeTreeFileFormat" => (ReadFileFormat.MergeTreeReadFormat, null)
+          case "CSVFileFormat" => (ReadFileFormat.TextReadFormat, null)
+          case "VastScan" => (ReadFileFormat.CustomReadFormat, VAST_CONNECTOR_ID)
+          case _ => (ReadFileFormat.UnknownFormat, null)
         }
       case f: HiveTableScanExecTransformer =>
         f.getScan match {
           case Some(f) =>
             f.getClass.getSimpleName match {
-              case "TextScan" => ReadFileFormat.TextReadFormat
-              case "JsonScan" => ReadFileFormat.JsonReadFormat
-              case _ => ReadFileFormat.UnknownFormat
+              case "TextScan" => (ReadFileFormat.TextReadFormat, null)
+              case "JsonScan" => (ReadFileFormat.JsonReadFormat, null)
+              case _ => (ReadFileFormat.UnknownFormat, null)
             }
-          case _ => ReadFileFormat.UnknownFormat
+          case _ => (ReadFileFormat.UnknownFormat, null)
         }
-      case _ => ReadFileFormat.UnknownFormat
+      case _ => (ReadFileFormat.UnknownFormat, null)
     }
   }
 
   // A prefix used in the iterator path.
   final val ITERATOR_PREFIX = "iterator:"
+
+  // ID must match VeloxInitializer.cc
+  final val VAST_CONNECTOR_ID = "test-vast";
 }

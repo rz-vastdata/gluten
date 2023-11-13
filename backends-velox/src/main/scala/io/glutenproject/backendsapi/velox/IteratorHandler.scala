@@ -72,14 +72,14 @@ class IteratorHandler extends IteratorApi with Logging {
           val paths = new java.util.ArrayList[String]()
           val starts = new java.util.ArrayList[java.lang.Long]()
           val lengths = new java.util.ArrayList[java.lang.Long]()
-          val fileFormat = wsCxt.substraitContext.getFileFormat.get(0)
+          val (fileFormat, connectorId) = wsCxt.substraitContext.getFileFormat.get(0)
           f.files.foreach { file =>
             paths.add(URLDecoder.decode(file.filePath, StandardCharsets.UTF_8.name()))
             starts.add(new java.lang.Long(file.start))
             lengths.add(new java.lang.Long(file.length))
           }
           (LocalFilesBuilder.makeLocalFiles(
-            f.index, paths, starts, lengths, fileFormat),
+            f.index, paths, starts, lengths, fileFormat, connectorId),
             SoftAffinityUtil.getFilePartitionLocations(f))
       }
     )

@@ -84,15 +84,15 @@ class SubstraitContext extends Serializable {
   private var localFilesNodesIndex: java.lang.Integer = new java.lang.Integer(0)
   private var localFilesNodes: Seq[java.io.Serializable] = _
   private var iteratorIndex: java.lang.Long = new java.lang.Long(0L)
-  private var fileFormat: java.util.List[ReadFileFormat] =
-    new java.util.ArrayList[ReadFileFormat]()
+  private var fileFormat: java.util.List[(ReadFileFormat, String)] =
+    new java.util.ArrayList[(ReadFileFormat, String)]()
   private var insertOutputNode: InsertOutputNode = _
   private var operatorId: java.lang.Long = new java.lang.Long(0L)
   private var relId: java.lang.Long = new java.lang.Long(0L)
 
-  def getFileFormat: java.util.List[ReadFileFormat] = this.fileFormat
+  def getFileFormat: java.util.List[(ReadFileFormat, String)] = this.fileFormat
 
-  def setFileFormat(format: java.util.List[ReadFileFormat]): Unit = {
+  def setFileFormat(format: java.util.List[(ReadFileFormat, String)]): Unit = {
     this.fileFormat = format
   }
 
